@@ -1,0 +1,46 @@
+// back-end/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Enum para garantir que o tipo seja apenas Gato ou Cachorro
+enum PetType {
+  GATO
+  CACHORRO
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  
+  // Relacionamento: Um usuário pode cadastrar vários pets
+  pets      Pet[]
+
+  @@map("users") // Nome da tabela no banco
+}
+
+model Pet {
+  id          String   @id @default(uuid())
+  name        String
+  age         Int
+  type        PetType
+  breed       String   // Raça
+  ownerName   String   // Nome do dono (humano)
+  ownerContact String  // Contato do dono (humano)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Chave estrangeira para o usuário que cadastrou
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("pets") // Nome da tabela no banco
+}
