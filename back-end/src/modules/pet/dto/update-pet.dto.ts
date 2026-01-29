@@ -1,3 +1,5 @@
+import { PartialType } from '@nestjs/swagger';
+import { CreatePetDto } from './create-pet.dto';
 import { z } from 'zod';
 
 export const updatePetSchema = z
@@ -14,4 +16,4 @@ export const updatePetSchema = z
     message: 'Informe ao menos um campo para atualização',
   });
 
-export type UpdatePetDto = z.infer<typeof updatePetSchema>;
+export class UpdatePetDto extends PartialType(CreatePetDto) {}

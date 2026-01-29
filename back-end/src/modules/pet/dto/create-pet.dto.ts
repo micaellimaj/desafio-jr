@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { z } from 'zod';
 
 export const createPetSchema = z.object({
@@ -9,4 +10,22 @@ export const createPetSchema = z.object({
   ownerContact: z.string().min(1, 'O contato do dono é obrigatório'),
 });
 
-export type CreatePetDto = z.infer<typeof createPetSchema>;
+export class CreatePetDto {
+  @ApiProperty({ example: 'Bento' })
+  name: string;
+
+  @ApiProperty({ example: 2 })
+  age: number;
+
+  @ApiProperty({ enum: ['GATO', 'CACHORRO'], example: 'CACHORRO' })
+  type: 'GATO' | 'CACHORRO';
+
+  @ApiProperty({ example: 'Golden Retriever' })
+  breed: string;
+
+  @ApiProperty({ example: 'Carlos Silva' })
+  ownerName: string;
+
+  @ApiProperty({ example: '(81) 99999-9999' })
+  ownerContact: string;
+}
