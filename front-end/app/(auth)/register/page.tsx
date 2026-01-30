@@ -47,7 +47,7 @@ export default function RegisterPage() {
     try {
       await register(data)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed')
+      setError(err instanceof Error ? err.message : 'Falha ao criar conta')
     }
   }
 
@@ -59,10 +59,10 @@ export default function RegisterPage() {
         </div>
         <div>
           <CardTitle className="text-2xl font-bold text-foreground">
-            Create an account
+            Criar uma conta
           </CardTitle>
           <CardDescription className="mt-2 text-muted-foreground">
-            Join PetShop and find your perfect companion
+            Junte-se ao PetShop e cuide melhor dos seus pets
           </CardDescription>
         </div>
       </CardHeader>
@@ -70,7 +70,7 @@ export default function RegisterPage() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {error && (
-              <div className="rounded-xl bg-destructive/10 p-4 text-sm text-destructive">
+              <div className="rounded-xl bg-destructive/10 p-4 text-sm text-destructive font-medium">
                 {error}
               </div>
             )}
@@ -80,17 +80,11 @@ export default function RegisterPage() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-foreground">Full Name</FormLabel>
+                  <FormLabel>Nome Completo</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        type="text"
-                        placeholder="John Doe"
-                        autoComplete="name"
-                        className="h-12 rounded-xl border-border/50 bg-background pl-10 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
-                        {...field}
-                      />
+                      <Input placeholder="Seu nome" className="h-12 rounded-xl pl-10" {...field} />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -103,17 +97,11 @@ export default function RegisterPage() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-foreground">Email</FormLabel>
+                  <FormLabel>E-mail</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        type="email"
-                        placeholder="you@example.com"
-                        autoComplete="email"
-                        className="h-12 rounded-xl border-border/50 bg-background pl-10 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
-                        {...field}
-                      />
+                      <Input type="email" placeholder="seu@email.com" className="h-12 rounded-xl pl-10" {...field} />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -126,31 +114,22 @@ export default function RegisterPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-foreground">Password</FormLabel>
+                  <FormLabel>Senha</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder="Create a password"
-                        autoComplete="new-password"
-                        className="h-12 rounded-xl border-border/50 bg-background pl-10 pr-10 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
-                        {...field}
+                      <Input 
+                        type={showPassword ? 'text' : 'password'} 
+                        placeholder="Crie uma senha" 
+                        className="h-12 rounded-xl pl-10 pr-10" 
+                        {...field} 
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                        tabIndex={-1}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
                       >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                        <span className="sr-only">
-                          {showPassword ? 'Hide password' : 'Show password'}
-                        </span>
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
                   </FormControl>
@@ -164,31 +143,22 @@ export default function RegisterPage() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-foreground">Confirm Password</FormLabel>
+                  <FormLabel>Confirmar Senha</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        placeholder="Confirm your password"
-                        autoComplete="new-password"
-                        className="h-12 rounded-xl border-border/50 bg-background pl-10 pr-10 transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
-                        {...field}
+                      <Input 
+                        type={showConfirmPassword ? 'text' : 'password'} 
+                        placeholder="Confirme sua senha" 
+                        className="h-12 rounded-xl pl-10 pr-10" 
+                        {...field} 
                       />
                       <button
                         type="button"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                        tabIndex={-1}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
                       >
-                        {showConfirmPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                        <span className="sr-only">
-                          {showConfirmPassword ? 'Hide password' : 'Show password'}
-                        </span>
+                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
                   </FormControl>
@@ -197,30 +167,16 @@ export default function RegisterPage() {
               )}
             />
 
-            <Button
-              type="submit"
-              className="h-12 w-full rounded-xl bg-primary text-base font-semibold shadow-lg shadow-primary/30 transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/40"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Creating account...
-                </>
-              ) : (
-                'Create account'
-              )}
+            <Button type="submit" className="h-12 w-full rounded-xl" disabled={isLoading}>
+              {isLoading ? 'Criando conta...' : 'Criar conta'}
             </Button>
           </form>
         </Form>
       </CardContent>
       <CardFooter className="justify-center text-sm text-muted-foreground">
-        Already have an account?{' '}
-        <Link
-          href="/login"
-          className="ml-1 font-semibold text-primary transition-colors hover:text-primary/80"
-        >
-          Sign in
+        Já tem uma conta?{' '}
+        <Link href="/login" className="ml-1 font-semibold text-primary">
+          Entrar
         </Link>
       </CardFooter>
     </Card>

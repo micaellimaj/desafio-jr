@@ -19,7 +19,7 @@ export async function POST(request: Request) {
 
     if (!email || !password) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
+        { error: 'E-mail e senha são obrigatórios' },
         { status: 400 }
       )
     }
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
     if (!user || user.password !== password) {
       return NextResponse.json(
-        { error: 'Invalid email or password' },
+        { error: 'E-mail ou senha inválida' },
         { status: 401 }
       )
     }
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     })
   } catch {
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Erro do Servidor Interno' },
       { status: 500 }
     )
   }

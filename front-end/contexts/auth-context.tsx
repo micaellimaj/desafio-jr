@@ -10,6 +10,8 @@ import {
 } from 'react'
 import { useRouter } from 'next/navigation'
 import type { AuthUser, LoginCredentials, RegisterData } from '@/lib/types'
+import { authService } from '@/services/auth'
+import { getErrorMessage } from '@/lib/api'
 
 interface AuthContextType {
   user: AuthUser | null
@@ -43,59 +45,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false)
   }, [])
 
-  const login = useCallback(
-    async (credentials: LoginCredentials) => {
-      setIsLoading(true)
-      try {
-        const response = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(credentials),
-        })
+  const login = useCallback(async (credentials: LoginCredentials) => {
+    setIsLoading(true)
+    try {
+      const data = await authService.login(credentials)
+      
+      const authData = { ...data.user, token: data.token }
+      setUser(authData)
+      localStorage.setItem('petshop_auth', JSON.stringify(authData))
+      
+      router.push('/dashboard')
+    } catch (error) {
+      throw new Error(getErrorMessage(error))
+    } finally {
+      setIsLoading(false)
+    }
+  }, [router])
 
-        const data = await response.json()
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Login failed')
-        }
-
-        const authUser: AuthUser = data.user
-        setUser(authUser)
-        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authUser))
-        router.push('/dashboard')
-      } finally {
-        setIsLoading(false)
-      }
-    },
-    [router]
-  )
-
-  const register = useCallback(
-    async (data: RegisterData) => {
-      setIsLoading(true)
-      try {
-        const response = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        })
-
-        const responseData = await response.json()
-
-        if (!response.ok) {
-          throw new Error(responseData.error || 'Registration failed')
-        }
-
-        const authUser: AuthUser = responseData.user
-        setUser(authUser)
-        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authUser))
-        router.push('/dashboard')
-      } finally {
-        setIsLoading(false)
-      }
-    },
-    [router]
-  )
+  const register = useCallback(async (data: RegisterData) => {
+    setIsLoading(true)
+    try {
+      const response = await authService.register(data)
+      
+      const authData = { ...response.user, token: response.token }
+      setUser(authData)
+      localStorage.setItem('petshop_auth', JSON.stringify(authData))
+      
+      router.push('/dashboard')
+    } catch (error) {
+      throw new Error(getErrorMessage(error))
+    } finally {
+      setIsLoading(false)
+    }
+  }, [router])
 
   const logout = useCallback(() => {
     setUser(null)
@@ -122,7 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext)
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error('useAuth deve ser usado dentro de um AuthProvider')
   }
   return context
 }

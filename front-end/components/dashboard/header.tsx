@@ -15,19 +15,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { ThemeToggle } from '@/components/theme-toggle'
+import  { getInitials } from '@/lib/utils'
 
 
 export function DashboardHeader() {
   const { user, logout } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  const initials =
-    user?.name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2) || 'U'
+  const initials = getInitials(user?.name);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/50 bg-card/80 backdrop-blur-lg">

@@ -19,7 +19,7 @@ export async function POST(request: Request) {
 
     if (!name || !email || !password) {
       return NextResponse.json(
-        { error: 'Name, email, and password are required' },
+        { error: 'Nome, e-mail e senha são obrigatórios' },
         { status: 400 }
       )
     }
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
     if (users.has(normalizedEmail)) {
       return NextResponse.json(
-        { error: 'A user with this email already exists' },
+        { error: 'Já existe um usuário com este e-mail' },
         { status: 409 }
       )
     }
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     })
   } catch {
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Erro do Servidor Interno' },
       { status: 500 }
     )
   }

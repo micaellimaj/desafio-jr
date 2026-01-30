@@ -1,6 +1,6 @@
 import type { Pet, PetFormData, ApiError } from '@/lib/types'
 
-const API_BASE_URL = '/api'
+const API_BASE_URL = 'http://localhost:4001'
 
 class ApiClient {
   private getToken(): string | null {
@@ -9,7 +9,8 @@ class ApiClient {
     if (!auth) return null
     try {
       const parsed = JSON.parse(auth)
-      return parsed.token || null
+      // No NestJS, costumamos retornar 'access_token' ou 'token'
+      return parsed.token || parsed.access_token || null 
     } catch {
       return null
     }
@@ -20,32 +21,38 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const token = this.getToken()
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    }
+    const headers = new Headers({
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string>),
+  });
 
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
-    }
-
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers,
     })
 
-    const data = await response.json()
+    const data = response.status !== 204 ? await response.json() : {}
 
     if (!response.ok) {
       const error: ApiError = {
         status: response.status,
-        message: data.error || 'An error occurred',
+        message: data.error || 'Ocorreu um erro',
         errors: data.errors,
       }
       throw error
     }
 
     return data
+  }
+
+  async post<T>(endpoint: string, body: any): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
   }
 
   // Pet endpoints
@@ -91,7 +98,7 @@ export function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message
   }
-  return 'An unexpected error occurred'
+  return 'Ocorreu um erro inesperado'
 }
 
 export function isAuthError(error: unknown): boolean {

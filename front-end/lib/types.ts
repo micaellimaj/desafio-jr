@@ -5,8 +5,10 @@ export interface User {
   createdAt: string
 }
 
+// para não quebrar seu front se o seu back usar 'token'
 export interface AuthUser extends User {
-  token: string
+  token?: string
+  access_token?: string 
 }
 
 export interface Pet {
@@ -28,6 +30,12 @@ export interface PetFormData {
   age: number
 }
 
+// Interface para o retorno do Login do NestJS
+export interface LoginResponse {
+  user: User
+  token: string
+  access_token?: string
+}
 
 export interface ApiResponse<T> {
   data?: T

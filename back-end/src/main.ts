@@ -5,6 +5,12 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
   const config = new DocumentBuilder()
     .setTitle('Desafio Junior API')
     .setDescription('Documentação da API de Pets e Usuários')
@@ -15,8 +21,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);
 
-  await app.listen(4000);
-  console.log(`🚀 Applicação está rodando em: http://localhost:3000`);
-  console.log(`📒 Documentação swagger está rodando em: http://localhost:3000/api-docs`);
+  await app.listen(4001);
+  console.log(`🚀 Applicação está rodando em: http://localhost:4001`);
+  console.log(`📒 Documentação swagger está rodando em: http://localhost:4001/api-docs`);
 }
 bootstrap();
