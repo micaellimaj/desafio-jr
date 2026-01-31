@@ -21,13 +21,7 @@ interface DeleteConfirmDialogProps {
   isLoading: boolean
 }
 
-export function DeleteConfirmDialog({
-  open,
-  onOpenChange,
-  pet,
-  onConfirm,
-  isLoading,
-}: DeleteConfirmDialogProps) {
+export function DeleteConfirmDialog({ open, onOpenChange, pet, onConfirm, isLoading }: DeleteConfirmDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="rounded-3xl">
@@ -35,10 +29,10 @@ export function DeleteConfirmDialog({
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-destructive/10">
             <Trash2 className="h-8 w-8 text-destructive" />
           </div>
-          <AlertDialogTitle className="text-xl">Delete Pet</AlertDialogTitle>
+          <AlertDialogTitle className="text-xl">Excluir Pet</AlertDialogTitle>
           <AlertDialogDescription className="text-center">
-            Are you sure you want to delete <strong className="text-foreground">{pet?.name}</strong>?
-            This action cannot be undone.
+            Tem certeza que deseja excluir <strong className="text-foreground">{pet?.name}</strong>?
+            Esta ação não poderá ser desfeita.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
@@ -51,17 +45,14 @@ export function DeleteConfirmDialog({
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Deleting...
+                Excluindo...
               </>
             ) : (
-              'Yes, Delete'
+              'Sim, Excluir'
             )}
           </Button>
-          <AlertDialogCancel
-            disabled={isLoading}
-            className="mt-0 h-12 w-full rounded-xl"
-          >
-            Cancel
+          <AlertDialogCancel disabled={isLoading} className="mt-0 h-12 w-full rounded-xl">
+            Cancelar
           </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>

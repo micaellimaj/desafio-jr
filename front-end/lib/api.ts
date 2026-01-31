@@ -1,20 +1,28 @@
-import type { Pet, PetFormData, ApiError } from '@/lib/types'
+import type { ApiError } from '@/lib/types'
 
 const API_BASE_URL = 'http://localhost:4001'
 
 class ApiClient {
-  private getToken(): string | null {
-    if (typeof window === 'undefined') return null
-    const auth = localStorage.getItem('petshop_auth')
-    if (!auth) return null
-    try {
-      const parsed = JSON.parse(auth)
-      // No NestJS, costumamos retornar 'access_token' ou 'token'
-      return parsed.token || parsed.access_token || null 
-    } catch {
-      return null
+
+private getToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  const auth = localStorage.getItem('petshop_auth');
+  if (!auth) return null;
+
+  try {
+    const parsed = JSON.parse(auth);
+    const token = parsed.access_token || parsed.token || parsed.accessToken;
+    
+    if (!token) {
+      console.warn("Token não encontrado dentro do objeto petshop_auth");
     }
+    
+    return token;
+  } catch (e) {
+    console.error("Erro ao fazer parse do petshop_auth", e);
+    return null;
   }
+}
 
   private async request<T>(
     endpoint: string,
@@ -22,30 +30,50 @@ class ApiClient {
   ): Promise<T> {
     const token = this.getToken()
     const headers = new Headers({
-    'Content-Type': 'application/json',
-    ...(options.headers as Record<string, string>),
-  });
+      'Content-Type': 'application/json',
+      ...(options.headers as Record<string, string>),
+    });
 
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`);
-  }
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    if (options.headers) {
+      Object.entries(options.headers).forEach(([key, value]) => {
+        headers.set(key, value as string);
+      });
+    }
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers,
     })
 
-    const data = response.status !== 204 ? await response.json() : {}
+    if (response.status === 204) return {} as T
+
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
+
 
     if (!response.ok) {
+      console.error(`ERRO API (${response.status}):`, data);
+
       const error: ApiError = {
         status: response.status,
-        message: data.error || 'Ocorreu um erro',
+        message: data.message || data.error || 'Ocorreu um erro',
         errors: data.errors,
       }
       throw error
     }
 
     return data
+  }
+
+  
+  async get<T>(endpoint: string): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'GET',
+    })
   }
 
   async post<T>(endpoint: string, body: any): Promise<T> {
@@ -55,34 +83,15 @@ class ApiClient {
     })
   }
 
-  // Pet endpoints
-  async getPets(search?: string): Promise<{ pets: Pet[] }> {
-    const params = new URLSearchParams()
-    if (search) params.set('search', search)
-    const query = params.toString()
-    return this.request<{ pets: Pet[] }>(`/pets${query ? `?${query}` : ''}`)
-  }
-
-  async getPet(id: string): Promise<{ pet: Pet }> {
-    return this.request<{ pet: Pet }>(`/pets/${id}`)
-  }
-
-  async createPet(data: PetFormData): Promise<{ pet: Pet }> {
-    return this.request<{ pet: Pet }>('/pets', {
-      method: 'POST',
-      body: JSON.stringify(data),
+  async patch<T>(endpoint: string, body: any): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
     })
   }
 
-  async updatePet(id: string, data: Partial<PetFormData>): Promise<{ pet: Pet }> {
-    return this.request<{ pet: Pet }>(`/pets/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    })
-  }
-
-  async deletePet(id: string): Promise<{ message: string }> {
-    return this.request<{ message: string }>(`/pets/${id}`, {
+  async delete<T>(endpoint: string): Promise<T> {
+    return this.request<T>(endpoint, {
       method: 'DELETE',
     })
   }
@@ -90,7 +99,7 @@ class ApiClient {
 
 export const apiClient = new ApiClient()
 
-// Error handler utility
+
 export function getErrorMessage(error: unknown): string {
   if (typeof error === 'object' && error !== null && 'message' in error) {
     return (error as ApiError).message

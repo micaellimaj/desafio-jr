@@ -10,7 +10,8 @@ import {
   Req,
   UsePipes,
   UseGuards,
-  BadRequestException
+  BadRequestException,
+  UnauthorizedException
 } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
@@ -40,10 +41,20 @@ export class PetController {
 
   @Post()
   @ApiOperation({ summary: 'Cadastra um novo pet' })
-  @ApiResponse({ status: 201, description: 'Pet criado com sucesso.' })
+  @ApiResponse({ 
+    status: 201, 
+    description: 'Pet criado com sucesso.',
+    type: PetResponseDto
+  })
   @UsePipes(new ZodValidationPipe(createPetSchema))
-  async create(@Body() data: CreatePetDto, @Req() req: Request) {
-    return this.createPet.execute(data, req.user['sub']);
+  async create(@Body() data: CreatePetDto, @Req() req: any) {
+    const userId = req.user?.sub || req.user?.id;
+
+    if (!userId) {
+      throw new UnauthorizedException('ID do usuário não encontrado no token');
+    }
+
+    return this.createPet.execute(data, userId);
   }
 
   @Get()

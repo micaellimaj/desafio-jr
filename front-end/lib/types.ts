@@ -12,22 +12,36 @@ export interface AuthUser extends User {
 }
 
 export interface Pet {
-  id: string
-  name: string
-  species: 'Dog' | 'Cat'
-  breed: string
-  age: number
-  ownerId: string
-  ownerName: string
-  createdAt: string
-  updatedAt: string
+  id: string;
+  name: string;
+  age: number;
+  type: 'CACHORRO' | 'GATO'; // Mudado de species para type
+  breed: string;
+  ownerName: string;
+  ownerContact: string;
+  createdAt: string;
+  updatedAt: string;
+  userId: string;
 }
 
+// Para criação, conforme seu createPetSchema
 export interface PetFormData {
-  name: string
-  species: 'Dog' | 'Cat'
-  breed: string
-  age: number
+  name: string;
+  age: number;
+  type: 'GATO' | 'CACHORRO';
+  breed: string;
+  ownerName: string;
+  ownerContact: string;
+}
+
+// Para criação, conforme seu createPetSchema
+export interface PetFormData {
+  name: string;
+  age: number;
+  type: 'GATO' | 'CACHORRO';
+  breed: string;
+  ownerName: string;
+  ownerContact: string;
 }
 
 // Interface para o retorno do Login do NestJS

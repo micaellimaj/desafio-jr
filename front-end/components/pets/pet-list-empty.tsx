@@ -19,18 +19,18 @@ export function PetListEmpty({ isSearching, searchQuery }: PetListEmptyProps) {
       </div>
       {isSearching ? (
         <>
-          <h3 className="mb-2 text-xl font-bold text-foreground">No pets found</h3>
+          <h3 className="mb-2 text-xl font-bold text-foreground">Nenhum animal de estimação encontrado</h3>
           <p className="max-w-sm text-muted-foreground">
             {"We couldn't find any pets matching "}
-            <span className="font-medium text-foreground">&quot;{searchQuery}&quot;</span>. Try a
-            different search term.
+            <span className="font-medium text-foreground">&quot;{searchQuery}&quot;</span>. Experimente um
+            termo de pesquisa diferente.
           </p>
         </>
       ) : (
         <>
           <h3 className="mb-2 text-xl font-bold text-foreground">No pets yet</h3>
           <p className="max-w-sm text-muted-foreground">
-            Be the first to add a furry friend! Click the &quot;Add Pet&quot; button to get started.
+            Seja o primeiro a adicionar um amigo peludo! Clique no &quot;Adicionar animal de estimação&quot; botão para começar.
           </p>
         </>
       )}

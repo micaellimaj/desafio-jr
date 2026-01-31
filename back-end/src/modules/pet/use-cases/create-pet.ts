@@ -7,7 +7,11 @@ export class CreatePet {
   constructor(private prisma: PrismaService) {}
 
   async execute(data: CreatePetDto, userId: string) {
-    const pet = await this.prisma.pet.create({
+    if (!userId) {
+      throw new Error("ID do usuário não fornecido para o cadastro do pet");
+    }
+
+    return await this.prisma.pet.create({
       data: {
         name: data.name,
         age: data.age,
@@ -15,10 +19,10 @@ export class CreatePet {
         breed: data.breed,
         ownerName: data.ownerName,
         ownerContact: data.ownerContact,
-        userId,
+        user: {
+          connect: { id: userId }
+        }
       },
     });
-
-    return pet;
   }
 }

@@ -40,23 +40,15 @@ export const registerSchema = z
 
 // Schemas de Pets
 export const petSchema = z.object({
-  name: z
-    .string()
-    .min(1, 'O nome do pet é obrigatório')
-    .min(2, 'O nome do pet deve ter pelo menos 2 caracteres')
-    .max(50, 'O nome do pet deve ter menos de 50 caracteres'),
-  species: z.enum(['Dog', 'Cat'], {
-    errorMap: () => ({ message: 'Por favor, selecione uma espécie (Cão ou Gato)' }),
+  name: z.string().min(1, 'O nome do pet é obrigatório'),
+  age: z.coerce.number().int().min(0, 'A idade não pode ser negativa'),
+  type: z.enum(['GATO', 'CACHORRO'], {
+    errorMap: () => ({ message: 'Selecione GATO ou CACHORRO' }),
   }),
-  breed: z
-    .string()
-    .min(1, 'A raça é obrigatória')
-    .max(50, 'A raça deve ter menos de 50 caracteres'),
-  age: z
-    .number({ invalid_type_error: 'A idade deve ser um número' })
-    .min(0, 'A idade não pode ser negativa')
-    .max(100, 'A idade deve ser inferior a 100'),
-})
+  breed: z.string().min(1, 'A raça é obrigatória'),
+  ownerName: z.string().min(1, 'O nome do dono é obrigatório'),
+  ownerContact: z.string().min(1, 'O contato do dono é obrigatório'),
+});
 
 // Schema de Busca
 export const searchSchema = z.object({
