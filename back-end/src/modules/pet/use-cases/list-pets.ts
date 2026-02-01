@@ -10,21 +10,14 @@ export class ListPets {
       where: query
         ? {
             OR: [
-              {
-                name: {
-                  contains: query,
-                  mode: 'insensitive',
-                },
-              },
-              {
-                ownerName: {
-                  contains: query,
-                  mode: 'insensitive',
-                },
-              },
+              { name: { contains: query, mode: 'insensitive' } },
+              { ownerName: { contains: query, mode: 'insensitive' } },
             ],
           }
         : undefined,
+      include: {
+        images: true,
+      },
       orderBy: {
         createdAt: 'desc',
       },
