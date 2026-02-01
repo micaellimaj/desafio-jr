@@ -15,7 +15,6 @@ export class UpdatePetImage {
     });
 
     if (!currentImage) {
-
       this.deletePhysicalFile(data.fileName);
       throw new NotFoundException('Imagem não encontrada.');
     }
@@ -28,12 +27,20 @@ export class UpdatePetImage {
     const oldFileName = currentImage.url.replace('/uploads/', '');
     this.deletePhysicalFile(oldFileName);
 
-    return await this.prisma.petImage.update({
-      where: { id: data.imageId },
-      data: { 
-        url: `/uploads/${data.fileName}` 
-      },
-    });
+    const [updatedImage] = await this.prisma.$transaction([
+      this.prisma.petImage.update({
+        where: { id: data.imageId },
+        data: { 
+          url: `/uploads/${data.fileName}` 
+        },
+      }),
+      this.prisma.pet.update({
+        where: { id: currentImage.petId },
+        data: { updatedAt: new Date() }
+      })
+    ]);
+
+    return updatedImage;
   }
 
   private deletePhysicalFile(fileName: string) {
@@ -43,7 +50,7 @@ export class UpdatePetImage {
       try {
         fs.unlinkSync(filePath);
       } catch (err) {
-        console.error(`Erro ao remover arquivo: ${filePath}`, err);
+        console.error(`Erro ao remover arquivo físico: ${filePath}`, err);
       }
     }
   }

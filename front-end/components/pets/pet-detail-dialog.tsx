@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import type { ElementType } from 'react'
+import Image from 'next/image'
 
 interface PetDetailDialogProps {
   open: boolean
@@ -44,13 +45,32 @@ export function PetDetailDialog({ open, onOpenChange, pet, isOwner, onEdit, onDe
   const TypeIcon = getTypeIcon(pet.type)
   const gradient = getTypeGradient(pet.type)
 
+  const updateTimestamp = pet.updatedAt ? new Date(pet.updatedAt).getTime() : Date.now();
+
+  const petImage = pet.images && pet.images.length > 0 
+    ? `http://localhost:4001${pet.images[0].url}?v=${updateTimestamp}` 
+    : null;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md overflow-hidden rounded-3xl border-0 p-0 shadow-2xl">
-        {/* Cabeçalho com Gradiente */}
-        <div className={`relative flex h-56 items-center justify-center bg-gradient-to-br ${gradient}`}>
+        
+        {/* Cabeçalho com Imagem ou Gradiente */}
+        <div className={`relative flex h-64 items-center justify-center bg-gradient-to-br ${gradient}`}>
+          {petImage ? (
+            <Image 
+              src={petImage} 
+              alt={pet.name} 
+              fill 
+              className="object-cover"
+              priority
+            />
+          ) : (
           <TypeIcon className="h-28 w-28 text-muted-foreground/30" />
+          )}
           
+          <div className="absolute inset-0 bg-black/5" />
+
           <button
             onClick={() => onOpenChange(false)}
             className="absolute left-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-card/80 text-muted-foreground shadow-md backdrop-blur-sm hover:bg-card"

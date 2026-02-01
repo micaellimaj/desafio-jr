@@ -25,18 +25,22 @@ private getToken(): string | null {
 }
 
   private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
-    const token = this.getToken()
-    const headers = new Headers({
-      'Content-Type': 'application/json',
-      ...(options.headers as Record<string, string>),
-    });
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const token = this.getToken()
+  
+  // Ajuste: Só define JSON se não for FormData
+  const isFormData = options.body instanceof FormData;
+  const headers = new Headers(options.headers);
 
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`);
-    }
+  if (!isFormData) {
+    headers.set('Content-Type', 'application/json');
+  }
+
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
 
     if (options.headers) {
       Object.entries(options.headers).forEach(([key, value]) => {
@@ -45,9 +49,10 @@ private getToken(): string | null {
     }
 
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      headers,
-    })
+    ...options,
+    headers,
+    body: isFormData ? options.body : (options.body ? JSON.stringify(options.body) : undefined),
+  })
 
     if (response.status === 204) return {} as T
 
@@ -79,14 +84,14 @@ private getToken(): string | null {
   async post<T>(endpoint: string, body: any): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'POST',
-      body: JSON.stringify(body),
+      body: body,
     })
   }
 
   async patch<T>(endpoint: string, body: any): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'PATCH',
-      body: JSON.stringify(body),
+      body: body,
     })
   }
 

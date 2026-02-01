@@ -50,6 +50,18 @@ export const petSchema = z.object({
   ownerContact: z.string().min(1, 'O contato do dono é obrigatório'),
 });
 
+
+// Schema para validação de imagem no Client-side
+export const petImageSchema = z.object({
+  file: z
+    .any()
+    .refine((file) => file?.size <= 5000000, `O tamanho máximo é 5MB.`)
+    .refine(
+      (file) => ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'].includes(file?.type),
+      "Apenas .jpg, .jpeg, .png e .webp são aceitos."
+    ),
+})
+
 // Schema de Busca
 export const searchSchema = z.object({
   query: z.string().max(100, 'A consulta de busca é muito longa'),
@@ -60,3 +72,4 @@ export type LoginFormData = z.infer<typeof loginSchema>
 export type RegisterFormData = z.infer<typeof registerSchema>
 export type PetFormData = z.infer<typeof petSchema>
 export type SearchFormData = z.infer<typeof searchSchema>
+export type PetImageFormData = z.infer<typeof petImageSchema>

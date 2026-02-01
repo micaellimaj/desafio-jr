@@ -5,6 +5,9 @@ import type { Pet } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { ElementType } from 'react'
+import Image from 'next/image'
+
+
 
 interface PetCardProps {
   pet: Pet
@@ -44,6 +47,13 @@ export function PetCard({ pet, isOwner, onEdit, onDelete, onClick }: PetCardProp
   const gradient = getTypeGradient(pet.type)
   const color = getTypeColor(pet.type)
 
+  const updateTimestamp = pet.updatedAt ? new Date(pet.updatedAt).getTime() : Date.now();
+
+  const petImage = pet.images && pet.images.length > 0 
+    ? `http://localhost:4001${pet.images[0].url}?v=${updateTimestamp}` 
+    : null;
+
+
   return (
     <div
       role="button"
@@ -51,7 +61,15 @@ export function PetCard({ pet, isOwner, onEdit, onDelete, onClick }: PetCardProp
       className="group relative cursor-pointer overflow-hidden rounded-3xl bg-card shadow-lg transition-all hover:-translate-y-1"
     >
       <div className={`relative flex h-36 items-center justify-center bg-gradient-to-br ${gradient}`}>
+      {petImage ? (
+        <img 
+          src={petImage} 
+          alt={pet.name} 
+          className="absolute inset-0 h-full w-full object-cover" 
+        />
+        ) : (
         <TypeIcon className="h-16 w-16 text-muted-foreground/30" />
+        )}
 
         {isOwner && (
           <div className="absolute right-3 top-3 flex gap-2">
@@ -98,3 +116,4 @@ export function PetCard({ pet, isOwner, onEdit, onDelete, onClick }: PetCardProp
     </div>
   )
 }
+

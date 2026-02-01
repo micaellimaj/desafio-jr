@@ -103,24 +103,42 @@ export default function DashboardPage() {
     myPets: pets.filter((pet) => pet.userId === user?.id).length
   }), [pets, user?.id])
 
-  const handleFormSubmit = async (data: PetFormData) => {
+  const handleFormSubmit = async (data: PetFormData, file?: File | null) => {
     setIsSubmitting(true)
     try {
+      let savedPet: Pet;
+
       if (selectedPet) {
-        await petService.update(selectedPet.id, data)
+  
+        savedPet = await petService.update(selectedPet.id, data)
+        
+        if (file) {
+    
+          await petService.uploadImage(selectedPet.id, file)
+        }
+        
         toast.success('Pet atualizado com sucesso!')
       } else {
-        await petService.create(data)
+        savedPet = await petService.create(data)
+        
+        if (file) {
+          await petService.uploadImage(savedPet.id, file)
+        }
+        
         toast.success('Pet cadastrado com sucesso!')
       }
-      setFormDialogOpen(false)
-      loadPets(searchQuery) 
-    } catch (error) {
-      toast.error(getErrorMessage(error))
-    } finally {
-      setIsSubmitting(false)
-    }
+
+    setFormDialogOpen(false)
+    setPets([]);
+    await loadPets(searchQuery)
+    
+    toast.success('Pet atualizado!')
+  } catch (error) {
+    toast.error('Erro ao atualizar')
+  } finally {
+    setIsSubmitting(false)
   }
+}
 
   const handleDeleteConfirm = async () => {
     if (!selectedPet) return
@@ -145,7 +163,7 @@ export default function DashboardPage() {
   if (authLoading || !isAuthenticated) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
-        <PetListSkeleton /> {/* Ou um spinner de sua preferência */}
+        <PetListSkeleton />
       </div>
     )
   }
@@ -213,7 +231,7 @@ export default function DashboardPage() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredPets.map((pet) => (
               <PetCard
-                key={pet.id}
+                key={`${pet.id}-${new Date(pet.updatedAt).getTime()}`}
                 pet={pet}
                 isOwner={isOwner(pet)}
                 onEdit={handleEditPet}

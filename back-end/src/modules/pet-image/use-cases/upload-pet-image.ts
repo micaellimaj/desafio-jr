@@ -17,11 +17,18 @@ export class UploadPetImageUseCase {
       throw new ForbiddenException('Você não tem permissão para este pet.');
     }
 
-    return await this.prisma.petImage.create({
+    const newImage = await this.prisma.petImage.create({
       data: {
         petId: data.petId,
         url: `/uploads/${data.fileName}`, 
       },
     });
+
+    await this.prisma.pet.update({
+      where: { id: data.petId },
+      data: { updatedAt: new Date() },
+    });
+
+    return newImage;
   }
 }

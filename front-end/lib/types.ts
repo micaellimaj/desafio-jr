@@ -5,23 +5,28 @@ export interface User {
   createdAt: string
 }
 
-// para não quebrar seu front se o seu back usar 'token'
 export interface AuthUser extends User {
   token?: string
   access_token?: string 
+}
+
+export interface PetImage {
+  id: string;
+  url: string;
 }
 
 export interface Pet {
   id: string;
   name: string;
   age: number;
-  type: 'CACHORRO' | 'GATO'; // Mudado de species para type
+  type: 'CACHORRO' | 'GATO'; 
   breed: string;
   ownerName: string;
   ownerContact: string;
   createdAt: string;
   updatedAt: string;
   userId: string;
+  images: { id: string; url: string }[];
 }
 
 // Para criação, conforme seu createPetSchema

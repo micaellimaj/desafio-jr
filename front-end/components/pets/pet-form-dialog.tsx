@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, PawPrint } from 'lucide-react'
+import { Loader2, PawPrint, ImagePlus, X } from 'lucide-react'
 import { petSchema, type PetFormData } from '@/lib/schemas'
 import type { Pet } from '@/lib/types'
 import { Button } from '@/components/ui/button'
@@ -36,7 +36,7 @@ interface PetFormDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   pet?: Pet | null
-  onSubmit: (data: PetFormData) => Promise<void>
+  onSubmit: (data: PetFormData, file?: File | null) => Promise<void>
   isLoading: boolean
 }
 
@@ -46,6 +46,9 @@ const typeOptions = [
 ]
 
 export function PetFormDialog({ open, onOpenChange, pet, onSubmit, isLoading }: PetFormDialogProps) {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+
   const isEditing = !!pet
   const form = useForm<PetFormData>({
     resolver: zodResolver(petSchema),
@@ -61,6 +64,8 @@ export function PetFormDialog({ open, onOpenChange, pet, onSubmit, isLoading }: 
 
   useEffect(() => {
     if (open) {
+      setSelectedFile(null)
+      setPreviewUrl(null)
       if (pet) {
         form.reset({
           name: pet.name,
@@ -70,11 +75,26 @@ export function PetFormDialog({ open, onOpenChange, pet, onSubmit, isLoading }: 
           ownerName: pet.ownerName,
           ownerContact: pet.ownerContact,
         })
+        if (pet.images && pet.images.length > 0) {
+          setPreviewUrl(`http://localhost:4001${pet.images[0].url}`)
+        }
       } else {
         form.reset({ name: '', type: 'CACHORRO', breed: '', age: 0, ownerName: '', ownerContact: '' })
       }
     }
   }, [open, pet, form])
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setSelectedFile(file)
+      setPreviewUrl(URL.createObjectURL(file))
+    }
+  }
+
+  const handleInternalSubmit = async (data: PetFormData) => {
+    await onSubmit(data, selectedFile)
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -92,7 +112,33 @@ export function PetFormDialog({ open, onOpenChange, pet, onSubmit, isLoading }: 
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleInternalSubmit)} className="space-y-4">
+            
+            {/* Campo Visual de Upload */}
+            <div className="flex flex-col items-center justify-center space-y-2 pb-2">
+              <FormLabel>Foto do Pet</FormLabel>
+              <div className="relative h-28 w-28 overflow-hidden rounded-2xl border-2 border-dashed border-muted-foreground/20 hover:border-primary/50 transition-colors">
+                {previewUrl ? (
+                  <>
+                    <img src={previewUrl} alt="Preview" className="h-full w-full object-cover" />
+                    <button 
+                      type="button"
+                      onClick={() => { setSelectedFile(null); setPreviewUrl(null); }}
+                      className="absolute right-1 top-1 rounded-full bg-destructive p-1 text-white shadow-sm"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </>
+                ) : (
+                  <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1 bg-muted/30 hover:bg-muted/50 transition-colors">
+                    <ImagePlus className="h-8 w-8 text-muted-foreground/40" />
+                    <span className="text-[10px] text-muted-foreground">Adicionar foto</span>
+                    <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                  </label>
+                )}
+              </div>
+            </div>
+
             <FormField
               control={form.control}
               name="name"
