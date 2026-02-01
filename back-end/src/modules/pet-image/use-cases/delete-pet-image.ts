@@ -15,15 +15,12 @@ export class DeletePetImage {
 
     if (!image) throw new NotFoundException('Imagem não encontrada');
 
-    // Regra de negócio: Verificação de dono
     if (image.pet.userId !== userId) {
       throw new ForbiddenException('Você não pode deletar imagens de pets de outros usuários');
     }
 
-    // 1. Remover do Banco
     await this.prisma.petImage.delete({ where: { id: imageId } });
 
-    // 2. Remover do Disco
     const filePath = join(__dirname, '..', '..', '..', '..', image.url);
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);

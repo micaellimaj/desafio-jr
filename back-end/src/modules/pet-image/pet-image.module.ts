@@ -17,7 +17,6 @@ import { DatabaseModule } from '../../shared/database/database.module';
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, callback) => {
-          // Gera um nome único para evitar sobrescrita
           const hash = randomBytes(8).toString('hex');
           const fileName = `${hash}-${Date.now()}${extname(file.originalname)}`;
           callback(null, fileName);

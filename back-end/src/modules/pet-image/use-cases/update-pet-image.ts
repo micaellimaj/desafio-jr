@@ -1,49 +1,50 @@
 import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../shared/database/prisma.service';
+import { UpdatePetImageDto } from '../dto/update-pet-image.dto';
 import * as fs from 'fs';
 import { join } from 'path';
-
-interface UpdatePetImageRequest {
-  userId: string;
-  imageId: string;
-  newFileName: string;
-}
 
 @Injectable()
 export class UpdatePetImage {
   constructor(private prisma: PrismaService) {}
 
-  async execute({ userId, imageId, newFileName }: UpdatePetImageRequest) {
- 
+  async execute(data: UpdatePetImageDto) {
     const currentImage = await this.prisma.petImage.findUnique({
-      where: { id: imageId },
+      where: { id: data.imageId },
       include: { pet: true },
     });
 
     if (!currentImage) {
+
+      this.deletePhysicalFile(data.fileName);
       throw new NotFoundException('Imagem não encontrada.');
     }
 
-    if (currentImage.pet.userId !== userId) {
-      
-      const tempPath = join(__dirname, '..', '..', '..', '..', 'uploads', newFileName);
-      if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
-      
-      throw new ForbiddenException('Você não tem permissão para alterar esta imagem.');
+    if (currentImage.pet.userId !== data.userId) {
+      this.deletePhysicalFile(data.fileName);
+      throw new ForbiddenException('Sem permissão para alterar esta imagem.');
     }
 
-    const oldPath = join(__dirname, '..', '..', '..', '..', currentImage.url);
-    if (fs.existsSync(oldPath)) {
-      fs.unlinkSync(oldPath);
-    }
+    const oldFileName = currentImage.url.replace('/uploads/', '');
+    this.deletePhysicalFile(oldFileName);
 
-    const updatedImage = await this.prisma.petImage.update({
-      where: { id: imageId },
-      data: {
-        url: `/uploads/${newFileName}`,
+    return await this.prisma.petImage.update({
+      where: { id: data.imageId },
+      data: { 
+        url: `/uploads/${data.fileName}` 
       },
     });
+  }
 
-    return updatedImage;
+  private deletePhysicalFile(fileName: string) {
+    const filePath = join(process.cwd(), 'uploads', fileName);
+    
+    if (fs.existsSync(filePath)) {
+      try {
+        fs.unlinkSync(filePath);
+      } catch (err) {
+        console.error(`Erro ao remover arquivo: ${filePath}`, err);
+      }
+    }
   }
 }

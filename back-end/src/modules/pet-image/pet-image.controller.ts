@@ -36,10 +36,7 @@ export class PetImageController {
   @Post(':id/images')
   @ApiOperation({ summary: 'Faz o upload de uma imagem para o pet' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'Arquivo de imagem do pet',
-    type: UploadPetFileSwaggerDto,
-  })
+  @ApiBody({ description: 'Arquivo de imagem do pet', type: UploadPetFileSwaggerDto })
   @ApiResponse({ status: 201, description: 'Imagem enviada com sucesso.' })
   @UseInterceptors(FileInterceptor('file'))
   async upload(
@@ -48,14 +45,8 @@ export class PetImageController {
     @Req() req: Request
   ) {
     const userId = req.user?.['sub'];
-
-    if (!userId) {
-      throw new UnauthorizedException('ID do usuário não encontrado no token');
-    }
-
-    if (!file) {
-      throw new BadRequestException('O arquivo de imagem é obrigatório');
-    }
+    if (!userId) throw new UnauthorizedException('ID do usuário não encontrado no token');
+    if (!file) throw new BadRequestException('O arquivo de imagem é obrigatório');
 
     return this.uploadPetImage.execute({
       userId,
@@ -81,17 +72,13 @@ export class PetImageController {
     @Param('imageId') imageId: string,
     @UploadedFile() file: Express.Multer.File,
     @Req() req: Request
-    ) {
+  ) {
     const userId = req.user['sub'];
-
-    if (!file) {
-        throw new BadRequestException('O novo arquivo de imagem é obrigatório');
-    }
-
+    if (!file) throw new BadRequestException('O novo arquivo de imagem é obrigatório');
     return this.updatePetImage.execute({
-        userId,
-        imageId,
-        newFileName: file.filename,
+      userId,
+      imageId,
+      fileName: file.filename, 
     });
-}
+  }
 }
