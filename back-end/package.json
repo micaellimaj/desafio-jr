@@ -11,6 +11,10 @@
     "test": "jest --testPathIgnorePatterns e2e.spec.ts --verbose",
     "test:e2e": "prisma generate && jest --config ./jest.config.ts e2e.spec.ts --runInBand",
     "test:all": "prisma generate && npm test && npm run test:e2e"
+    
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.12",

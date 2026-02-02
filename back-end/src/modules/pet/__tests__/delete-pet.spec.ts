@@ -22,7 +22,7 @@ describe('DeletePet (Teste Unitário)', () => {
     prismaMock.pet.findUnique.mockResolvedValue({ id: petId, userId });
     prismaMock.pet.delete.mockResolvedValue({});
 
-    const result = await deletePet.execute(petId, userId);
+    const result = await deletePet.execute(petId, userId, 'USER');
 
     expect(result).toEqual({ message: 'Pet removido com sucesso' });
     expect(prismaMock.pet.delete).toHaveBeenCalledWith({ where: { id: petId } });
@@ -33,7 +33,7 @@ describe('DeletePet (Teste Unitário)', () => {
     prismaMock.pet.findUnique.mockResolvedValue({ id: petId, userId: 'dono-real' });
 
     await expect(
-      deletePet.execute(petId, 'usuario-invasor')
+      deletePet.execute(petId, 'usuario-invasor', 'USER')
     ).rejects.toThrow(ForbiddenException);
 
     expect(prismaMock.pet.delete).not.toHaveBeenCalled();

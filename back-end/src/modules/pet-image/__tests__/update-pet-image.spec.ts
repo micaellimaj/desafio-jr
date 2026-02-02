@@ -25,7 +25,7 @@ describe('UpdatePetImage (Teste Unitário)', () => {
     prismaMock.petImage.findUnique.mockResolvedValue(mockImage);
     (fs.existsSync as jest.Mock).mockReturnValue(true);
 
-    await useCase.execute({ userId: 'user-1', imageId: 'img-1', fileName: 'nova.jpg' });
+    await useCase.execute({ userId: 'user-1', imageId: 'img-1', fileName: 'nova.jpg', userRole: 'USER'});
 
     expect(fs.unlinkSync).toHaveBeenCalled();
     expect(prismaMock.petImage.update).toHaveBeenCalledWith({

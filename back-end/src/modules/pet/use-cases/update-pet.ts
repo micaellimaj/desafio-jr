@@ -1,12 +1,13 @@
 import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../shared/database/prisma.service';
 import { UpdatePetDto } from '../dto/update-pet.dto';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class UpdatePet {
   constructor(private prisma: PrismaService) {}
 
-  async execute(petId: string, data: UpdatePetDto, userId: string) {
+  async execute(petId: string, data: UpdatePetDto, userId: string, userRole: string) {
     const pet = await this.prisma.pet.findUnique({
       where: { id: petId },
     });
@@ -15,7 +16,7 @@ export class UpdatePet {
       throw new NotFoundException('Pet não encontrado');
     }
 
-    if (pet.userId !== userId) {
+    if (pet.userId !== userId && userRole !== Role.ADMIN) {
       throw new ForbiddenException('Você não tem permissão para editar este pet');
     }
 

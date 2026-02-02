@@ -58,8 +58,11 @@ export class PetImageController {
   @Delete('images/:imageId')
   @ApiOperation({ summary: 'Remove uma imagem específica de um pet' })
   @ApiResponse({ status: 204, description: 'Imagem removida.' })
-  async delete(@Param('imageId') imageId: string, @Req() req: Request) {
-    return this.deletePetImage.execute(imageId, req.user['sub']);
+  async delete(@Param('imageId') imageId: string, @Req() req: any) {
+    const userId = req.user.userId || req.user.sub;
+    const userRole = req.user.role;
+    
+    return this.deletePetImage.execute(imageId, userId, userRole);
   }
 
   @Patch('images/:imageId')
@@ -71,14 +74,18 @@ export class PetImageController {
   async update(
     @Param('imageId') imageId: string,
     @UploadedFile() file: Express.Multer.File,
-    @Req() req: Request
+    @Req() req: any
   ) {
-    const userId = req.user['sub'];
+    const userId = req.user.userId || req.user.sub;
+    const userRole = req.user.role;
+
     if (!file) throw new BadRequestException('O novo arquivo de imagem é obrigatório');
+
     return this.updatePetImage.execute({
       userId,
       imageId,
-      fileName: file.filename, 
+      fileName: file.filename,
+      userRole,
     });
   }
 }

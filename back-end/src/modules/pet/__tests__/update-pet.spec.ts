@@ -22,7 +22,7 @@ describe('UpdatePet (Teste Unitário)', () => {
     prismaMock.pet.findUnique.mockResolvedValue({ id: petId, userId: userId });
     prismaMock.pet.update.mockResolvedValue({ id: petId, name: 'Novo Nome' });
 
-    const result = await updatePet.execute(petId, { name: 'Novo Nome' }, userId);
+    const result = await updatePet.execute(petId, { name: 'Novo Nome' }, userId, 'USER');
 
     expect(result.name).toBe('Novo Nome');
     expect(prismaMock.pet.update).toHaveBeenCalled();
@@ -32,7 +32,7 @@ describe('UpdatePet (Teste Unitário)', () => {
     prismaMock.pet.findUnique.mockResolvedValue(null);
 
     await expect(
-      updatePet.execute('id-invalido', { name: 'Nome' }, 'any-user')
+      updatePet.execute('id-invalido', { name: 'Nome' }, 'any-user', 'USER')
     ).rejects.toThrow(NotFoundException);
   });
 
@@ -41,7 +41,7 @@ describe('UpdatePet (Teste Unitário)', () => {
     prismaMock.pet.findUnique.mockResolvedValue({ id: petId, userId: 'dono-real' });
 
     await expect(
-      updatePet.execute(petId, { name: 'Tentativa Invasora' }, 'usuario-errado')
+      updatePet.execute(petId, { name: 'Tentativa Invasora' }, 'usuario-errado', 'USER')
     ).rejects.toThrow(ForbiddenException);
     
     expect(prismaMock.pet.update).not.toHaveBeenCalled();

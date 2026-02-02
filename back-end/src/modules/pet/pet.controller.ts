@@ -26,6 +26,7 @@ import { CreatePetDto, createPetSchema } from './dto/create-pet.dto';
 import { UpdatePetDto, updatePetSchema } from './dto/update-pet.dto';
 import { SearchPetDto, searchPetSchema, PetResponseDto } from './dto/search-pet.dto';
 import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
+import { Role } from '@prisma/client';
 
 @ApiTags('pets')
 @ApiBearerAuth()
@@ -48,7 +49,7 @@ export class PetController {
   })
   @UsePipes(new ZodValidationPipe(createPetSchema))
   async create(@Body() data: CreatePetDto, @Req() req: any) {
-    const userId = req.user?.sub || req.user?.id;
+    const userId = req.user.userId || req.user.sub;
 
     if (!userId) {
       throw new UnauthorizedException('ID do usuário não encontrado no token');
@@ -77,18 +78,25 @@ export class PetController {
   async update(
     @Param('id') petId: string,
     @Body() data: UpdatePetDto,
-    @Req() req: Request,
+    @Req() req: any,
   ) {
     if (!data || Object.keys(data).length === 0) {
       throw new BadRequestException('Informe ao menos um campo para atualização');
     }
-    return this.updatePet.execute(petId, data, req.user['sub']);
+
+    const userId = req.user.userId || req.user.sub;
+    const userRole = req.user.role;
+
+    return this.updatePet.execute(petId, data, userId, userRole);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Remove um pet do sistema' })
   @ApiResponse({ status: 204, description: 'Pet removido com sucesso.' })
-  async delete(@Param('id') petId: string, @Req() req: Request) {
-    return this.deletePet.execute(petId, req.user['sub']);
+  async delete(@Param('id') petId: string, @Req() req: any) {
+    const userId = req.user.userId || req.user.sub;
+    const userRole = req.user.role;
+
+    return this.deletePet.execute(petId, userId, userRole);
   }
 }

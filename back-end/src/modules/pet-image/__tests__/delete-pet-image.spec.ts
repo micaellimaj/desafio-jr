@@ -30,7 +30,7 @@ describe('DeletePetImage (Unit - Success)', () => {
     prismaMock.petImage.findUnique.mockResolvedValue(mockImage);
     (fs.existsSync as jest.Mock).mockReturnValue(true);
 
-    const result = await useCase.execute(imageId, userId);
+    const result = await useCase.execute(imageId, userId, 'USER');
 
     expect(prismaMock.petImage.delete).toHaveBeenCalledWith({ where: { id: imageId } });
     expect(fs.unlinkSync).toHaveBeenCalled();

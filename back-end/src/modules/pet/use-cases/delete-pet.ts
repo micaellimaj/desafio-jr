@@ -2,12 +2,13 @@ import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/commo
 import { PrismaService } from '../../../shared/database/prisma.service';
 import * as fs from 'fs';
 import { join } from 'path';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class DeletePet {
   constructor(private prisma: PrismaService) {}
 
-  async execute(petId: string, userId: string) {
+  async execute(petId: string, userId: string, userRole: string) {
     const pet = await this.prisma.pet.findUnique({
       where: { id: petId },
       include: { images: true },
@@ -17,7 +18,7 @@ export class DeletePet {
       throw new NotFoundException('Pet não encontrado');
     }
 
-    if (pet.userId !== userId) {
+    if (pet.userId !== userId && userRole !== Role.ADMIN) {
       throw new ForbiddenException('Você não tem permissão para excluir este pet');
     }
 
