@@ -45,36 +45,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const login = useCallback(async (credentials: LoginCredentials) => {
-  setIsLoading(true)
-  try {
-    const data = await authService.login(credentials)
-    
-    const token = data.access_token || data.token;
-    
-    const authData = { ...data.user, access_token: token }
-    
-    setUser(authData)
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData))
-    
-    router.push('/dashboard')
-  } catch (error) {
-    throw new Error(getErrorMessage(error))
-  } finally {
-    setIsLoading(false)
-  }
-}, [router])
+    setIsLoading(true)
+    try {
+      const data = await authService.login(credentials)
+      
+      const token = data.access_token || data.token;
+      
+      const authData = { ...data.user, access_token: token }
+      
+      setUser(authData)
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData))
+      
+      router.push('/dashboard')
+    } catch (error) {
+      throw new Error(getErrorMessage(error))
+    } finally {
+      setIsLoading(false)
+    }
+  }, [router])
 
   const register = useCallback(async (data: RegisterData) => {
-  setIsLoading(true)
-  try {
-    await authService.register(data)
-    router.push('/login') 
-  } catch (error) {
-    throw new Error(getErrorMessage(error))
-  } finally {
-    setIsLoading(false)
-  }
-}, [router])
+    setIsLoading(true)
+    try {
+      await authService.register(data)
+      router.push('/login') 
+    } catch (error) {
+      throw new Error(getErrorMessage(error))
+    } finally {
+      setIsLoading(false)
+    }
+  }, [router])
 
   const logout = useCallback(() => {
     setUser(null)

@@ -20,7 +20,7 @@ export class UploadPetImageUseCase {
     const newImage = await this.prisma.petImage.create({
       data: {
         petId: data.petId,
-        url: `/uploads/${data.fileName}`, 
+        url: data.fileName, 
       },
     });
 

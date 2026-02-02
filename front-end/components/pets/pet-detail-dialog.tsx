@@ -48,8 +48,8 @@ export function PetDetailDialog({ open, onOpenChange, pet, isOwner, onEdit, onDe
   const updateTimestamp = pet.updatedAt ? new Date(pet.updatedAt).getTime() : Date.now();
 
   const petImage = pet.images && pet.images.length > 0 
-    ? `http://localhost:4001${pet.images[0].url}?v=${updateTimestamp}` 
-    : null;
+  ? `http://localhost:4001/uploads/${pet.images[0].url}?v=${updateTimestamp}` 
+  : null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

@@ -1,13 +1,12 @@
 'use client'
 
-import { Cat, Dog, Pencil, Trash2, PawPrint } from 'lucide-react'
+import { Cat, Dog, Pencil, Trash2, PawPrint, ShieldCheck } from 'lucide-react'
 import type { Pet } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { ElementType } from 'react'
 import Image from 'next/image'
-
-
+import { useAuth } from '@/contexts/auth-context'
 
 interface PetCardProps {
   pet: Pet
@@ -43,15 +42,20 @@ function getTypeColor(type: string) {
 }
 
 export function PetCard({ pet, isOwner, onEdit, onDelete, onClick }: PetCardProps) {
+  const { user } = useAuth()
+  
   const TypeIcon = getTypeIcon(pet.type)
   const gradient = getTypeGradient(pet.type)
   const color = getTypeColor(pet.type)
 
+  const isAdmin = user?.role === 'ADMIN'
+  const showControls = isOwner || isAdmin
+
   const updateTimestamp = pet.updatedAt ? new Date(pet.updatedAt).getTime() : Date.now();
 
   const petImage = pet.images && pet.images.length > 0 
-    ? `http://localhost:4001${pet.images[0].url}?v=${updateTimestamp}` 
-    : null;
+  ? `http://localhost:4001/uploads/${pet.images[0].url}?v=${updateTimestamp}` 
+  : null;
 
 
   return (
@@ -61,17 +65,18 @@ export function PetCard({ pet, isOwner, onEdit, onDelete, onClick }: PetCardProp
       className="group relative cursor-pointer overflow-hidden rounded-3xl bg-card shadow-lg transition-all hover:-translate-y-1"
     >
       <div className={`relative flex h-36 items-center justify-center bg-gradient-to-br ${gradient}`}>
-      {petImage ? (
-        <img 
-          src={petImage} 
-          alt={pet.name} 
-          className="absolute inset-0 h-full w-full object-cover" 
-        />
+        {petImage ? (
+          <img 
+            src={petImage} 
+            alt={pet.name} 
+            className="absolute inset-0 h-full w-full object-cover" 
+          />
         ) : (
-        <TypeIcon className="h-16 w-16 text-muted-foreground/30" />
+          <TypeIcon className="h-16 w-16 text-muted-foreground/30" />
         )}
 
-        {isOwner && (
+        {/* Botões aparecem para Dono ou Admin */}
+        {showControls && (
           <div className="absolute right-3 top-3 flex gap-2">
             <Button
               variant="secondary"
@@ -97,9 +102,15 @@ export function PetCard({ pet, isOwner, onEdit, onDelete, onClick }: PetCardProp
         <div className="mb-3">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-bold">{pet.name}</h3>
-            {isOwner && (
+            
+            {/* Feedback visual dinâmico */}
+            {isOwner ? (
               <Badge className="bg-primary/10 text-primary">Seu pet</Badge>
-            )}
+            ) : isAdmin ? (
+              <Badge variant="outline" className="border-amber-500/50 text-amber-600 gap-1">
+                <ShieldCheck className="h-3 w-3" /> Admin
+              </Badge>
+            ) : null}
           </div>
           <p className="text-sm text-muted-foreground">
             {pet.breed} - {pet.age} {pet.age === 1 ? 'ano' : 'anos'}
@@ -116,4 +127,3 @@ export function PetCard({ pet, isOwner, onEdit, onDelete, onClick }: PetCardProp
     </div>
   )
 }
-

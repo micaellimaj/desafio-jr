@@ -76,7 +76,8 @@ export function PetFormDialog({ open, onOpenChange, pet, onSubmit, isLoading }: 
           ownerContact: pet.ownerContact,
         })
         if (pet.images && pet.images.length > 0) {
-          setPreviewUrl(`http://localhost:4001${pet.images[0].url}`)
+          const imageUrl = pet.images[0].url;
+          setPreviewUrl(`http://localhost:4001/uploads/${imageUrl}?v=${new Date(pet.updatedAt).getTime()}`);
         }
       } else {
         form.reset({ name: '', type: 'CACHORRO', breed: '', age: 0, ownerName: '', ownerContact: '' })

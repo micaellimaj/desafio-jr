@@ -32,7 +32,7 @@ export class UpdatePetImage {
       this.prisma.petImage.update({
         where: { id: data.imageId },
         data: { 
-          url: `/uploads/${data.fileName}` 
+          url: data.fileName
         },
       }),
       this.prisma.pet.update({

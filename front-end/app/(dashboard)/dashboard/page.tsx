@@ -27,9 +27,9 @@ const categories = [
 ]
 
 export default function DashboardPage() {
-
   const { user, logout, isAuthenticated, isLoading: authLoading } = useAuth()
   const router = useRouter()
+  const isAdmin = user?.role === 'ADMIN'
 
   const [pets, setPets] = useState<Pet[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -111,30 +111,29 @@ export default function DashboardPage() {
       if (selectedPet) {
   
         savedPet = await petService.update(selectedPet.id, data)
-        
         if (file) {
-    
-          await petService.uploadImage(selectedPet.id, file)
+        try {
+           await petService.uploadImage(selectedPet.id, file)
+        } catch (imgErr) {
+           toast.error("Pet salvo, mas houve erro no upload da imagem.")
         }
-        
-        toast.success('Pet atualizado com sucesso!')
-      } else {
-        savedPet = await petService.create(data)
-        
-        if (file) {
-          await petService.uploadImage(savedPet.id, file)
-        }
-        
-        toast.success('Pet cadastrado com sucesso!')
       }
+    } else {
+      savedPet = await petService.create(data)
+      if (file && savedPet.id) {
+        try {
+          await petService.uploadImage(savedPet.id, file)
+        } catch (imgErr) {
+          toast.error("Pet criado, mas falhou ao subir a imagem.")
+        }
+      }
+    }
 
+    toast.success('Operação realizada!')
     setFormDialogOpen(false)
-    setPets([]);
-    await loadPets(searchQuery)
-    
-    toast.success('Pet atualizado!')
+    loadPets(searchQuery)
   } catch (error) {
-    toast.error('Erro ao atualizar')
+    toast.error('Erro ao salvar dados do pet')
   } finally {
     setIsSubmitting(false)
   }
@@ -178,9 +177,13 @@ export default function DashboardPage() {
           <div className="relative z-10">
             <h2 className="text-xl font-bold sm:text-2xl">Encontre seu novo amigo</h2>
             <p className="mb-4 text-sm opacity-90">Gerencie seus pets ou adote um novo companheiro.</p>
-            <Button onClick={handleAddPet} variant="secondary" className="rounded-xl">
-              <Plus className="mr-2 h-4 w-4" /> Cadastrar Pet
+
+
+            {!isAdmin && (
+              <Button onClick={handleAddPet} variant="secondary" className="rounded-xl">
+                <Plus className="mr-2 h-4 w-4" /> Cadastrar Pet
             </Button>
+            )}
           </div>
           <PawPrint className="absolute -bottom-4 -right-4 h-32 w-32 opacity-20 rotate-12" />
         </div>

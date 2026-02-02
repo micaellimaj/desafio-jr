@@ -26,10 +26,11 @@ export const petService = {
   },
 
   async uploadImage(petId: string, file: File): Promise<PetImage> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return apiClient.post<PetImage>(`/pets/${petId}/images`, formData);
-  },
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  return apiClient.post<PetImage>(`/pets/${petId}/images`, formData);
+},
 
   async updateImage(imageId: string, file: File): Promise<PetImage> {
     const formData = new FormData();
