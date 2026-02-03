@@ -8,7 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -28,9 +28,10 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);
 
-  await app.listen(4001);
-  console.log(`🚀 Applicação está rodando em: http://localhost:4001`);
-  console.log(`📒 Documentação swagger: http://localhost:4001/api-docs`);
+  const port = process.env.PORT;
+  await app.listen(port);
+  console.log(`🚀 Aplicação rodando em: http://localhost:${port}`);
+  console.log(`📒 Documentação swagger: http://localhost::${port}/api-docs`);
 }
 
 bootstrap();

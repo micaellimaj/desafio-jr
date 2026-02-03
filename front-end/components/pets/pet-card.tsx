@@ -5,8 +5,8 @@ import type { Pet } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { ElementType } from 'react'
-import Image from 'next/image'
 import { useAuth } from '@/contexts/auth-context'
+import { API_BASE_URL } from '@/lib/api';
 
 interface PetCardProps {
   pet: Pet
@@ -54,7 +54,7 @@ export function PetCard({ pet, isOwner, onEdit, onDelete, onClick }: PetCardProp
   const updateTimestamp = pet.updatedAt ? new Date(pet.updatedAt).getTime() : Date.now();
 
   const petImage = pet.images && pet.images.length > 0 
-  ? `http://localhost:4001/uploads/${pet.images[0].url}?v=${updateTimestamp}` 
+  ? `${API_BASE_URL}/uploads/${pet.images[0].url}?v=${updateTimestamp}` 
   : null;
 
 

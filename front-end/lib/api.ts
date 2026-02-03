@@ -1,11 +1,15 @@
 import type { ApiError } from '@/lib/types'
+import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:4001'
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+export const api = axios.create({
+  baseURL: API_BASE_URL,
+});
 
 class ApiClient {
   /**
    * Recupera o token de autenticação do localStorage.
-   * Suporta diferentes nomenclaturas (access_token, token, accessToken).
    */
   private getToken(): string | null {
     if (typeof window === 'undefined') return null;
@@ -31,16 +35,12 @@ class ApiClient {
     const token = this.getToken();
     const isFormData = options.body instanceof FormData;
     
-    // Inicializa os headers mantendo os que forem passados via options
     const headers = new Headers(options.headers);
 
-    // Se NÃO for FormData, define como JSON. 
-    // Se FOR FormData, o browser deve definir o Content-Type automaticamente com o 'boundary'.
     if (!isFormData) {
       headers.set('Content-Type', 'application/json');
     }
 
-    // Injeta o token Bearer se estiver disponível
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
     }
@@ -48,7 +48,6 @@ class ApiClient {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers,
-      // Stringifica o body se for um objeto simples, senão passa o FormData puro
       body: isFormData ? options.body : (options.body ? JSON.stringify(options.body) : undefined),
     });
 

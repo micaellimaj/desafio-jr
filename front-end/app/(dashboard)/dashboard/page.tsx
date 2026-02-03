@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback, useEffect } from 'react'
-import { Plus, Cat, Dog, PawPrint } from 'lucide-react'
+import { Plus, Cat, Dog, PawPrint, ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
@@ -173,28 +173,44 @@ export default function DashboardPage() {
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         
         {/* Banner */}
-        <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-primary to-accent p-6 text-primary-foreground shadow-xl">
-          <div className="relative z-10">
-            <h2 className="text-xl font-bold sm:text-2xl">Encontre seu novo amigo</h2>
-            <p className="mb-4 text-sm opacity-90">Gerencie seus pets ou adote um novo companheiro.</p>
+      <div className="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-primary to-accent p-6 text-primary-foreground shadow-xl">
+        <div className="relative z-10">
+          <h2 className="text-xl font-bold sm:text-2xl flex items-center gap-2">
+            {isAdmin 
+              ? <ShieldCheck className="h-7 w-7" /> 
+              : <PawPrint className="h-7 w-7" />
+            } 
+            {isAdmin ? 'Painel de Administração' : 'Encontre seu novo amigo'}
+          </h2>
+          
+          <p className="mb-4 text-sm opacity-90">
+            {isAdmin 
+              ? 'Você tem controle total sobre o catálogo. Gerencie, edite ou remova qualquer pet.' 
+              : 'Gerencie seus pets ou adote um novo companheiro.'}
+          </p>
 
-
-            {!isAdmin && (
-              <Button onClick={handleAddPet} variant="secondary" className="rounded-xl">
-                <Plus className="mr-2 h-4 w-4" /> Cadastrar Pet
+          {!isAdmin && (
+            <Button onClick={handleAddPet} variant="secondary" className="rounded-xl">
+              <Plus className="mr-2 h-4 w-4" /> Cadastrar Pet
             </Button>
-            )}
-          </div>
-          <PawPrint className="absolute -bottom-4 -right-4 h-32 w-32 opacity-20 rotate-12" />
+          )}
         </div>
+        
+        <PawPrint className="absolute -bottom-4 -right-4 h-32 w-32 opacity-20 rotate-12" />
+      </div>
 
         {/* Header de Boas Vindas */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold">Olá, <span className="text-primary">{user?.name || 'Amigo dos Pets'}</span></h1>
+          <h1 className="text-2xl font-bold">
+            Olá, <span className="text-primary">{user?.name || 'Amigo dos Pets'}</span>
+          </h1>
           <p className="text-sm text-muted-foreground">
-            {stats.total} pets encontrados {stats.myPets > 0 && `(sendo ${stats.myPets} seus)`}
+            {isAdmin 
+              ? `Existem ${stats.total} pets cadastrados no sistema no total.`
+              : `${stats.total} pets encontrados ${stats.myPets > 0 ? `(sendo ${stats.myPets} seus)` : ''}`
+            }
           </p>
-        </div>
+      </div>
 
         <div className="mb-6 flex gap-2">
           <div className="flex-1">

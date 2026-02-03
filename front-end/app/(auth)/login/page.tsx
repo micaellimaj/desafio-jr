@@ -44,7 +44,6 @@ export default function LoginPage() {
     try {
       await login(data)
     } catch (err) {
-      // Pega a mensagem tratada pelo nosso utilitário no context/api
       setError(err instanceof Error ? err.message : 'Falha ao realizar login')
     }
   }

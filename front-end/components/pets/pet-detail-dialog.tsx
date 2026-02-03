@@ -12,6 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import type { ElementType } from 'react'
 import Image from 'next/image'
+import { API_BASE_URL } from '@/lib/api'
 
 interface PetDetailDialogProps {
   open: boolean
@@ -48,7 +49,7 @@ export function PetDetailDialog({ open, onOpenChange, pet, isOwner, onEdit, onDe
   const updateTimestamp = pet.updatedAt ? new Date(pet.updatedAt).getTime() : Date.now();
 
   const petImage = pet.images && pet.images.length > 0 
-  ? `http://localhost:4001/uploads/${pet.images[0].url}?v=${updateTimestamp}` 
+  ? `${API_BASE_URL}/uploads/${pet.images[0].url}?v=${updateTimestamp}` 
   : null;
 
   return (

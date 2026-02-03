@@ -1,4 +1,3 @@
-// components/pets/pet-filters.tsx
 import { ListFilter, SortAsc, SortDesc, Calendar, PawPrint  } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {

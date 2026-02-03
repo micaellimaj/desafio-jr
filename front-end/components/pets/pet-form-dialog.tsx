@@ -31,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { API_BASE_URL } from '@/lib/api'
 
 interface PetFormDialogProps {
   open: boolean
@@ -77,7 +78,7 @@ export function PetFormDialog({ open, onOpenChange, pet, onSubmit, isLoading }: 
         })
         if (pet.images && pet.images.length > 0) {
           const imageUrl = pet.images[0].url;
-          setPreviewUrl(`http://localhost:4001/uploads/${imageUrl}?v=${new Date(pet.updatedAt).getTime()}`);
+          setPreviewUrl(`${API_BASE_URL}/uploads/${imageUrl}?v=${new Date(pet.updatedAt).getTime()}`);
         }
       } else {
         form.reset({ name: '', type: 'CACHORRO', breed: '', age: 0, ownerName: '', ownerContact: '' })
