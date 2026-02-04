@@ -454,5 +454,9 @@ Este projeto reflete a entrega de uma solução Fullstack robusta, onde a priori
 
 Gostaria de expressar minha gratidão à InteraTo pela oportunidade de participar deste desafio técnico. O desenvolvimento deste projeto foi uma experiência enriquecedora que permitiu consolidar conhecimentos em arquitetura modular, segurança da informação e desenvolvimento de interfaces modernas.
 
-
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=7254E2&height=115&section=footer&text=🐶%20Sem%20bugs,%20apenas%20miau-ravilhas%20e%20cão-fiança.%20Obrigado%20por%20explorar%20este%20ecossistema!%20🐱&fontSize=16&textColor=ffffff&fontAlign=center" />
+<br />
+<p align="center">
+  <kbd>
+    <b>🐶 Sem bugs, apenas miau-ravilhas e cão-fiança. Obrigado por explorar este ecossistema! 🐱</b>
+  </kbd>
+</p>
