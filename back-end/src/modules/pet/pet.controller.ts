@@ -13,9 +13,8 @@ import {
   BadRequestException,
   UnauthorizedException
 } from '@nestjs/common';
-import { Request } from 'express';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 
 import { CreatePet } from './use-cases/create-pet';
 import { UpdatePet } from './use-cases/update-pet';
@@ -23,10 +22,10 @@ import { DeletePet } from './use-cases/delete-pet';
 import { ListPets } from './use-cases/list-pets';
 
 import { CreatePetDto, createPetSchema } from './dto/create-pet.dto';
-import { UpdatePetDto, updatePetSchema } from './dto/update-pet.dto';
-import { SearchPetDto, searchPetSchema, PetResponseDto } from './dto/search-pet.dto';
+import { UpdatePetDto } from './dto/update-pet.dto';
+import { SearchPetDto,  PetResponseDto } from './dto/search-pet.dto';
 import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
-import { Role } from '@prisma/client';
+
 
 @ApiTags('pets')
 @ApiBearerAuth()

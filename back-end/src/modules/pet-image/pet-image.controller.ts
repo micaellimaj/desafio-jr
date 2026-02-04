@@ -12,14 +12,12 @@ import {
   Patch
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Request } from 'express';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { UploadPetImageUseCase } from './use-cases/upload-pet-image';
 import { DeletePetImage } from './use-cases/delete-pet-image';
 import { UpdatePetImage } from './use-cases/update-pet-image';
-import { UploadPetFileSwaggerDto } from './dto/upload-pet-image.dto';
 import { UpdatePetImageSwaggerDto } from './dto/update-pet-image.dto';
 
 @ApiTags('pets')
